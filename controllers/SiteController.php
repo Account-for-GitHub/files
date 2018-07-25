@@ -9,14 +9,16 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\Orders;
+use yii\web\UploadedFile;
+use yii\helpers\Html;
 
-class SiteController extends Controller
-{
+class SiteController extends Controller {
+
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'access' => [
                 'class' => AccessControl::className(),
@@ -41,8 +43,7 @@ class SiteController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
-    {
+    public function actions() {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
@@ -59,9 +60,39 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
-    {
-        return $this->render('index');
+    public function actionIndex() {
+
+        $model = new \app\models\Orders();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $model->name = Html::encode($model->name);
+            $model->date_from = strftime("%d-%m-%Y");
+            $model->date_to= Html::encode($model->date_to);
+            $img = UploadedFile::getInstance($model, 'img');
+            if(is_object($img)){
+            $img_name = $img->baseName . "." . $img->extension;
+            $img->saveAs('../img/' . $img_name);
+            $model->img = "../img/" . $img_name;
+            }else{
+                $model->img ='';
+            }
+
+            $model->save();
+        }
+
+        return $this->render('index', ['model' => $model]);
+    }
+
+    public function actionList() {
+        $model = new \app\models\Orders();
+
+        return $this->render('list', ['model' => $model]);
+    }
+
+    public function actionWatch($id=1) {
+        $model = new \app\models\Orders();
+        $model=Orders::find()->where(['id'=>$id])->one();
+
+        return $this->render('watch', ['model' => $model]);
     }
 
     /**
@@ -69,8 +100,7 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionLogin()
-    {
+    public function actionLogin() {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
@@ -82,7 +112,7 @@ class SiteController extends Controller
 
         $model->password = '';
         return $this->render('login', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -91,8 +121,7 @@ class SiteController extends Controller
      *
      * @return Response
      */
-    public function actionLogout()
-    {
+    public function actionLogout() {
         Yii::$app->user->logout();
 
         return $this->goHome();
@@ -103,8 +132,7 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionContact()
-    {
+    public function actionContact() {
         $model = new ContactForm();
         if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
             Yii::$app->session->setFlash('contactFormSubmitted');
@@ -112,7 +140,7 @@ class SiteController extends Controller
             return $this->refresh();
         }
         return $this->render('contact', [
-            'model' => $model,
+                    'model' => $model,
         ]);
     }
 
@@ -121,8 +149,8 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionAbout()
-    {
+    public function actionAbout() {
         return $this->render('about');
     }
+
 }

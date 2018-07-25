@@ -1,51 +1,59 @@
 <?php
 
-/* @var $this yii\web\View */
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use yii\jui\DatePicker;
+use dosamigos\ckeditor\CKEditor;
 
-$this->title = 'My Yii Application';
+/* @var $this yii\web\View */
+/* @var $model app\models\Orders */
+/* @var $form ActiveForm */
+
+$this->title = 'Страница создания заявки.';
 ?>
 <div class="site-index">
 
-    <div class="jumbotron">
-        <h1>Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
+    <br />
+    <br />
+    <center><h1>Страница создания заявки.</h1></center>
+    <br />
+    <br />
 
     <div class="body-content">
 
         <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+            <div class="col-lg-offset-4 col-lg-4">
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
 
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
+                <?= $form->field($model, 'name') ?>
+                <?= $form->field($model, 'img')->fileInput(['class' => 'btn-primary', 'style' => 'width:100%; height:30px; border-radius:4px;']); ?>
+                <?= $form->field($model, 'text')->widget(CKEditor::className(), [
+		'options' => ['rows' => 6],
+		'preset' => 'basic'
+	]); ?>
+                <center>
+                    <?= $form->field($model, 'date_to')->input('text', ['id' => 'datepicker', 'class' => 'form-control']); ?>
+                </center>
+                <?=
+                $form->field($model, 'status')->dropDownList([
+                    0 => 'Выберите статус',
+                    1 => 'Open',
+                    2 => 'Needs offer',
+                    3 => 'Offered',
+                    4 => 'Approved',
+                    5 => 'In progress',
+                    6 => 'Ready',
+                    7 => 'Verified',
+                    8 => 'Closed',
+                ]);
+                ?>
 
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
+                <div class="form-group">
+                    <?= Html::submitButton('Отправить', ['class' => 'btn btn-primary']) ?>
+                </div>
+                <?php ActiveForm::end(); ?>
 
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
             </div>
         </div>
 
