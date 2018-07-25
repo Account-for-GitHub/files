@@ -45,7 +45,7 @@ class Orders extends \yii\db\ActiveRecord
     {
         return [
             'name' => 'Название',
-            'img' => 'Загрузите изображение',
+            'img' => 'Изображение',
             'text' => 'Описание',
             'date_from' => 'Дата создания',
             'date_to' => 'Дата завершения',

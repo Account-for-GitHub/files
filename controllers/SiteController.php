@@ -12,6 +12,9 @@ use app\models\ContactForm;
 use app\models\Orders;
 use yii\web\UploadedFile;
 use yii\helpers\Html;
+use yii\data\ActiveDataProvider;
+use app\models\OrdersSearch;
+use yii\helpers\Url;
 
 class SiteController extends Controller {
 
@@ -55,42 +58,56 @@ class SiteController extends Controller {
         ];
     }
 
+    public function actionIndex() {
+
+        $model = Orders::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $model,
+            'pagination' => [
+                'pageSize' => 4,
+            ],
+        ]);
+
+        return $this->render('index', ['model' => $model, 'dataProvider' => $dataProvider]);
+    }
+
     /**
      * Displays homepage.
      *
      * @return string
      */
-    public function actionIndex() {
+    public function actionEdit($id = 0) {
+        if ($id)
+            $model = Orders::findOne($id);
+        else
+            $model = new \app\models\Orders();
 
-        $model = new \app\models\Orders();
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $model->name = Html::encode($model->name);
             $model->date_from = strftime("%d-%m-%Y");
-            $model->date_to= Html::encode($model->date_to);
+            $model->date_to = Html::encode($model->date_to);
             $img = UploadedFile::getInstance($model, 'img');
-            if(is_object($img)){
-            $img_name = $img->baseName . "." . $img->extension;
-            $img->saveAs('../img/' . $img_name);
-            $model->img = "../img/" . $img_name;
-            }else{
-                $model->img ='';
+            $attrs=['name','text','date_from','date_to','status'];
+            if (is_object($img)) {
+                $attrs[]='img';
+                $img_name = $img->baseName . "." . $img->extension;
+                $img->saveAs('../img/' . $img_name);
+                $model->img = "../img/" . $img_name;
             }
 
-            $model->save();
+            if ($id)
+                $model->update(true, $attrs);
+            else
+                $model->save();
+            return $this->redirect(Url::toRoute('index'));
         }
 
-        return $this->render('index', ['model' => $model]);
+        return $this->render('edit', ['model' => $model]);
     }
 
-    public function actionList() {
-        $model = new \app\models\Orders();
-
-        return $this->render('list', ['model' => $model]);
-    }
-
-    public function actionWatch($id=1) {
-        $model = new \app\models\Orders();
-        $model=Orders::find()->where(['id'=>$id])->one();
+    public function actionWatch($id = 1) {
+        $model = Orders::find()->where(['id' => $id])->one();
 
         return $this->render('watch', ['model' => $model]);
     }

@@ -21,6 +21,7 @@ AppAsset::register($this);
         <?= Html::csrfMetaTags() ?>
         <title><?= Html::encode($this->title) ?></title>
         <?php $this->head() ?>
+        <link rel="stylesheet" href="css/site.css">
         <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
     </head>
     <body>
@@ -38,8 +39,8 @@ AppAsset::register($this);
             echo Nav::widget([
                 'options' => ['class' => 'navbar-nav navbar-right'],
                 'items' => [
-                    ['label' => 'Страница создания заявки', 'url' => ['/site/index']],
-                    ['label' => 'Список заявок', 'url' => ['/site/list']],
+                    ['label' => 'Страница создания заявки', 'url' => ['/site/edit']],
+                    ['label' => 'Список заявок', 'url' => ['/site/index']],
                     ['label' => 'Просмотр заявки', 'url' => ['/site/watch']]
                 ]
             ]);
@@ -53,7 +54,9 @@ AppAsset::register($this);
                 ])
                 ?>
                 <?= Alert::widget() ?>
-<?= $content ?>
+                <div id="wrapper" class="col-lg-offset-1 col-lg-10">
+                    <?= $content ?>
+                </div>
             </div>
         </div>
 
@@ -65,7 +68,7 @@ AppAsset::register($this);
             </div>
         </footer>
 
-<?php $this->endBody() ?>
+        <?php $this->endBody() ?>
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script>
             window.onload = function () {
